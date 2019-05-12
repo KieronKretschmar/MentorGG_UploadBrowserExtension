@@ -90,25 +90,34 @@ $(function () {
                         tab: "matchhistorycompetitive",
                         continue_token: token
                     }
-                }).done(function(data) {                                                        
+                }).done(function(data) {     
+                    
                     let times = data.html.match(/([0-9]{4}-[0-9]{2}-[0-9]{2}\s{1}[0-9]{2}:[0-9]{2}:[0-9]{2}\sGMT)/g);
                     let links = data.html.match(/(http([s]?):\/\/replay[0-9]+.valve.net\/730\/[0-9_]+.dem.bz2)/g);
 
-                    //if links.length != times.length then
-                    //the match has been so long ago that the demo is no longer available
-                    for ( let i = 0; i < links.length; i++ ) {
-                        uploadData.push({
-                            url: links[i],
-                            time: new Date(times[i]).getTime() / 1000
-                        });
-                    }
+                    console.log("DemoLinks: " + links);
+                    console.log("DemoTimes: " + times);
 
-                    if ( data.continue_token && links.length == times.length ) {
-                        GetMatches(data.continue_token, fnDone);
-                    } else {
+                    if (times != null && links != null) {
+                        //if links.length != times.length then
+                        //the match has been so long ago that the demo is no longer available
+                        for ( let i = 0; i < links.length; i++ ) {
+                            uploadData.push({
+                                url: links[i],
+                                time: new Date(times[i]).getTime() / 1000
+                            });
+                        }
+
+                        if ( data.continue_token && links.length == times.length ) {
+                            GetMatches(data.continue_token, fnDone);
+                        } else {
+                            fnDone();
+                        }
+                    }
+                    else
+                    {
                         fnDone();
                     }
-
                 }).fail(function(jqXHR) {
                     console.log(jqHXR);
                     alert(jqXHR);
