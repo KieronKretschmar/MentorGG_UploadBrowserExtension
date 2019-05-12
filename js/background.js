@@ -32,7 +32,6 @@ var highlight_icon = {
     "38": "icons/icon_highlight_38.png"
 };
 
-
 function updateIcon(tab) {
     if (Helper.URL.IsSteamCommunity(tab.url)) {
         chrome.browserAction.setIcon({ path: highlight_icon });
