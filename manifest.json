@@ -1,0 +1,31 @@
+{
+  "name": "Mentor.GG Uploader",
+  "short_name": "Mentor.GG",
+  "version": "1.1",
+  "description": "Uploads your recent CS:GO matches to Mentor.gg.",
+  "permissions": [
+    "tabs",
+    "*://*.steamcommunity.com/*",
+    "*://mentor.gg/*"
+  ],
+  "browser_action": {
+    "default_title": "Mentor.GG",
+    "default_icon": {
+      "19": "icons/icon_19.png",
+      "38": "icons/icon_38.png"
+    },
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [ "*://*.steamcommunity.com/*" ],
+      "js": [ "/js/history_worker.js" ]
+    }
+  ],
+  "background": {
+    "scripts": [ "/js/background.js" ],
+    "persistent": true
+  },
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+}

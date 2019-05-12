@@ -1,0 +1,96 @@
+﻿<html>
+
+<head>
+    <meta charset="UTF-8">
+
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/popup.js"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Cairo:300,400,600,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+        integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body style="width: 400px">
+
+    <header>
+        <img src="icons/icon.png">
+        <h1>Mentor<span>.GG</span></h1>
+    </header>
+
+    <section id="content">
+
+        <div class="status">
+            <div class="y">
+                <i class="fas fa-check"></i>
+                <p>Ready to upload!</p>
+            </div>
+            <div class="n">
+                <i class="fas fa-times"></i>
+                <p>You need to be logged in to upload matches.</p>
+            </div>
+        </div>
+
+        <div class="buttons">
+            <button class="open-login">Open Login Page</button>
+            <button class="upload-matches">Upload Matches</button>
+        </div>
+
+        <div class="overlay" name="wrong-page">
+		<h2> Almost there...</h2>
+            <p>
+                To upload matches you need to open this extension while being on a Steamcommunity page.
+                <br>
+                <br>
+                <a class="open-login">OK, take me there!</a>
+            </p>
+        </div>
+
+        <div class="overlay" name="status">
+            <h2>Hold on tight!</h2>           
+            <p>
+                We are currently uploading your matches.
+                <br>
+                Please wait until the upload has finished.
+            </p> 
+            <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+        </div>
+
+        <template id="status-done">
+            <h2>Upload successful!</h2>
+            <i class="fas fa-check"></i>
+            <p>
+				Your matches are now being analyzed. Check out the results at 
+				<a target="_blank" href="https://mentor.gg/">www.mentor.gg</a>
+				!
+			</p>
+        </template>
+
+        <template id="status-error">
+            <h2>Whoops!</h2>
+            <i class="fas fa-times"></i>
+            <p>
+                Something went wrong.
+                <br>
+                Please try again later :(
+            </p>
+        </template>
+
+        <template id="status-no-matches">
+            <h2>Whoops!</h2>
+            <i class="fas fa-times"></i>
+            <p>
+                There are no matches that we could upload right now.
+            </p>
+        </template>
+    </section>
+
+    <footer>
+        <a target="_blank" href="https://mentor.gg/">www.mentor.gg</a>
+    </footer>
+
+
+</body>
+
+</html>
