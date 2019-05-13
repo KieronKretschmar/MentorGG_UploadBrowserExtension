@@ -33,11 +33,15 @@ var highlight_icon = {
 };
 
 function updateIcon(tab) {
-    if (Helper.URL.IsSteamCommunity(tab.url)) {
-        chrome.browserAction.setIcon({ path: highlight_icon });
-    } else {
-        chrome.browserAction.setIcon({ path: default_icon });
+    // do nothing if no tab is active
+    if (tab) {
+        if (Helper.URL.IsSteamCommunity(tab.url)) {
+            chrome.browserAction.setIcon({ path: highlight_icon });
+        } else {
+            chrome.browserAction.setIcon({ path: default_icon });
+        }
     }
+
 }
 
 function updateIconOnUpdated(tabId, changeInfo, tab) {
