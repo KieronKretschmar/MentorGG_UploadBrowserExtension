@@ -33,14 +33,13 @@ var highlight_icon = {
 };
 
 function updateIcon(tab) {
-    // do nothing if no tab is active
-    if (tab) {
-        if (Helper.URL.IsSteamCommunity(tab.url)) {
-            chrome.browserAction.setIcon({ path: highlight_icon });
-        } else {
-            chrome.browserAction.setIcon({ path: default_icon });
-        }
+    // use default icon if no tab is active or user is not on steamcommunity
+    if (tab && Helper.URL.IsSteamCommunity(tab.url)) {
+        chrome.browserAction.setIcon({ path: highlight_icon });
+    } else {
+        chrome.browserAction.setIcon({ path: default_icon });
     }
+    
 
 }
 
