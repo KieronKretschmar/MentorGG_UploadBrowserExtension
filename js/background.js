@@ -63,6 +63,17 @@ function OnInitialized() {
 
         //Steam user is currently logged in
         if ( response.loginState ) {
+            if (UserPressedOpenLoginPage) {
+                UserPressedOpenLoginPage = false;
+
+                chrome.tabs.sendMessage(ActiveTabId, {
+                    msg: "TriggerUploadOverlay",
+                    tpl: OverlayTemplate
+                }, response => {
+            
+                });
+            }
+
             SetPopupAvailability(false);
         } 
         //Steam user is currently NOT logged in
@@ -126,15 +137,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    console.log(request);
+
     if ( request.msg == 'SetUserPressedOpenLoginPage' ) {
         UserPressedOpenLoginPage = true;
         sendResponse({success: true});
-        return;
-    }
-
-    if ( request.msg == 'ConsumeUserPressedOpenLoginPage' ) {
-        sendResponse({result: UserPressedOpenLoginPage});
-        UserPressedOpenLoginPage = false;
         return;
     }
 
