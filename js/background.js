@@ -1,6 +1,11 @@
+var InterfaceTarget = 'http://mentor.gg:99/api/demos';
+var UserPressedOpenLoginPage = false;
+var ActiveTabId = -1;
+var OverlayTemplate = '';
+
 var Helper = {
     GetCurrentTab: function (fn) {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.query({ active: true }, function (tabs) {
             fn(tabs[0]);
         });
     },
@@ -22,34 +27,212 @@ var Helper = {
     }
 };
 
-var default_icon = {
-    "19": "icons/icon_19.png",
-    "38": "icons/icon_38.png"
-};
-
-var highlight_icon = {
-    "19": "icons/icon_highlight_19.png",
-    "38": "icons/icon_highlight_38.png"
-};
-
-function updateIcon(tab) {
-    // use default icon if no tab is active or user is not on steamcommunity
-    if (tab && Helper.URL.IsSteamCommunity(tab.url)) {
-        chrome.browserAction.setIcon({ path: highlight_icon });
+function SetPopupAvailability(state) {
+    if ( state ) {
+        chrome.browserAction.setPopup({popup: 'popup.html'});
+        chrome.browserAction.setBadgeText({text: ''});
     } else {
-        chrome.browserAction.setIcon({ path: default_icon });
+        chrome.browserAction.setPopup({popup: ''});
+        chrome.browserAction.setBadgeText({text: '\u2713'});
     }
+}
+
+function WaitForInitialization(onInit) {
+    chrome.tabs.sendMessage(ActiveTabId, { 
+        msg: "IsInitialized" 
+    }, response => {
+        if ( chrome.runtime.lastError )
+            return;
+
+        if ( response !== undefined ) {
+            if (response.status == true) {
+                onInit();
+            } else {
+                setTimeout(function () {
+                    WaitForInitialization(onInit);
+                }, 100);
+            }
+        }
+    });
+}
+
+function OnInitialized() {
+    chrome.tabs.sendMessage(ActiveTabId, { 
+        msg: "GetLoginState" 
+    }, response => {
+
+        //Steam user is currently logged in
+        if ( response.loginState ) {
+            SetPopupAvailability(false);
+        } 
+        //Steam user is currently NOT logged in
+        else {
+            //Thus, display 'Go to login page'
+            SetPopupAvailability(true);
+        }
+    });
+}
+
+function SendUploadDoneMessage(statusCode, fnHandled) {
+    Helper.GetCurrentTab(tab => {
+        chrome.tabs.sendMessage(tab.id, { 
+
+            msg: "MatchUploadDone",
+            status: statusCode
+
+        }, response => {
+
+        });
+    });
+}
+
+function OnTabURLChange(newUrl) {
+    if (Helper.URL.IsSteamCommunity(newUrl)) {
+        WaitForInitialization(OnInitialized);
+    } else {
+        SetPopupAvailability(true);
+    }
+}
+
+//This can only be called when no popup is set
+//So we always inject our overlay
+chrome.browserAction.onClicked.addListener(tab => {
+
+    chrome.tabs.sendMessage(tab.id, {
+        msg: "TriggerUploadOverlay",
+        tpl: OverlayTemplate
+    }, response => {
+
+    });
+});
+
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    ActiveTabId = activeInfo.tabId;
+
+    Helper.GetCurrentTab(tab => {
+        if ( tab != null ) {
+            OnTabURLChange(tab.url);
+        }
+    });
     
+});
 
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    ActiveTabId = tabId;
+
+    if ( tab != null ) {
+        OnTabURLChange(tab.url);
+    }
+});
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if ( request.msg == 'SetUserPressedOpenLoginPage' ) {
+        UserPressedOpenLoginPage = true;
+        sendResponse({success: true});
+        return;
+    }
+
+    if ( request.msg == 'ConsumeUserPressedOpenLoginPage' ) {
+        sendResponse({result: UserPressedOpenLoginPage});
+        UserPressedOpenLoginPage = false;
+        return;
+    }
+
+    if ( request.msg == 'UploadMatches' ) {
+        //This should theoretically never happen
+        //So for now we aren't handling it
+        if ( !request.steamid ) {
+            return;
+        }
+
+        let uploadData = [];
+
+        var GetMatches = function(token, fnDone) {
+            $.ajax({
+                type: "GET",
+                url: "https://steamcommunity.com/profiles/" + request.steamid + "/gcpd/730",
+                data: {
+                    sessionid: request.session,
+                    ajax: 1,
+                    tab: "matchhistorycompetitive",
+                    continue_token: token
+                }
+            }).done(function(data) {     
+                
+                let times = data.html.match(/([0-9]{4}-[0-9]{2}-[0-9]{2}\s{1}[0-9]{2}:[0-9]{2}:[0-9]{2}\sGMT)/g);
+                let links = data.html.match(/(http([s]?):\/\/replay[0-9]+.valve.net\/730\/[0-9_]+.dem.bz2)/g);
+
+                console.log("DemoLinks: " + links);
+                console.log("DemoTimes: " + times);
+
+                if (times != null && links != null) {
+                    //if links.length != times.length then
+                    //the match has been so long ago that the demo is no longer available
+                    for ( let i = 0; i < links.length; i++ ) {
+                        uploadData.push({
+                            url: links[i],
+                            time: new Date(times[i]).getTime() / 1000
+                        });
+                    }
+
+                    if ( data.continue_token && links.length == times.length ) {
+                        GetMatches(data.continue_token, fnDone);
+                    } else {
+                        fnDone();
+                    }
+                }
+                else
+                {
+                    fnDone();
+                }
+            }).fail(function(jqXHR) {
+                console.log(jqHXR);
+                alert(jqXHR);
+            });
+        };
+
+        GetMatches(null, function() {
+            if ( uploadData.length <= 0 ) {
+                SendUploadDoneMessage(-1);
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: InterfaceTarget,
+                data: JSON.stringify({
+                    list: uploadData
+                }),
+                crossDomain: true,
+                contentType: "application/json",
+                dataType: "json",
+                cache: false,
+                async: true,
+                success: function (msg) {
+                    SendUploadDoneMessage(0);
+                },
+                error: function (jxhr) {
+                    console.log(jxhr.responseText);
+                    SendUploadDoneMessage(-2);
+                }
+            });
+        });
+    }
+});
+
+//Load popup html
+$.ajax({
+    url: chrome.extension.getURL('overlay.html'),
+    dataType: 'html',
+    success: data => {
+        OverlayTemplate = data;
+    }
+});
+
+if (chrome.browserAction.setBadgeBackgroundColor) {
+    chrome.browserAction.setBadgeBackgroundColor({ color: [254, 70, 0, 255] });
 }
 
-function updateIconOnUpdated(tabId, changeInfo, tab) {
-    Helper.GetCurrentTab(updateIcon);
+if (chrome.browserAction.setBadgeTextColor) {
+    chrome.browserAction.setBadgeTextColor({ color: [255, 255, 255, 255] });    
 }
-
-function updateIconOnActivated(tabId, selectInfo) {
-    Helper.GetCurrentTab(updateIcon);
-}
-
-chrome.tabs.onUpdated.addListener(updateIconOnUpdated);
-chrome.tabs.onActivated.addListener(updateIconOnActivated);
