@@ -164,8 +164,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     tab: "matchhistorycompetitive",
                     continue_token: token
                 }
-            }).done(function(data) {     
+            }).done(function (data) { 
                 
+                if (!data.html) {
+                    fnDone();
+                    return;
+                }
+
                 let times = data.html.match(/([0-9]{4}-[0-9]{2}-[0-9]{2}\s{1}[0-9]{2}:[0-9]{2}:[0-9]{2}\sGMT)/g);
                 let links = data.html.match(/(http([s]?):\/\/replay[0-9]+.valve.net\/730\/[0-9_]+.dem.bz2)/g);
 
