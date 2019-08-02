@@ -1,5 +1,5 @@
 # MentorGGAddOn
-Chrome/Firefox extension for Mentor.GG
+Chrome/Firefox extension for MENTOR.GG
 
 # Testing in Chrome
 * Go to [chrome://extensions/](chrome://extensions/) and enable developer mode

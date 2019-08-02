@@ -1,15 +1,15 @@
 {
-  "name": "Mentor.GG Uploader",
-  "short_name": "Mentor.GG",
-  "version": "1.3",
-  "description": "Uploads your recent CS:GO matches to Mentor.gg.",
+  "name": "MENTOR.GG Uploader",
+  "short_name": "MENTOR.GG",
+  "version": "1.4",
+  "description": "Uploads your recent CS:GO matches to MENTOR.GG.",
   "permissions": [
     "tabs",
     "*://*.steamcommunity.com/*",
     "*://mentor.gg/*"
   ],
   "browser_action": {
-    "default_title": "Mentor.GG",
+    "default_title": "MENTOR.GG",
     "default_icon": {
       "19": "icons/icon_19.png",
       "38": "icons/icon_38.png"
