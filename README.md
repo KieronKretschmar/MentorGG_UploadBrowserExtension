@@ -20,3 +20,7 @@ Chrome/Firefox extension for MENTOR.GG
 # Deploying to the respective stores
 * [Chrome](https://developer.chrome.com/webstore/publish)
 * [Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/Distribution/Submitting_an_add-on)
+
+# Note for extension inspectors of the FireFox / Chrome Store
+We use the official minified jquery-3.3.1.min.js
+We use .less file(s) that are compiled to .css files. 

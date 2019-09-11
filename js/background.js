@@ -1,4 +1,5 @@
 var InterfaceTarget = 'http://mentor.gg:99/api/demos';
+// var InterfaceTarget = 'http://localhost:6992/api/demos';
 var UserPressedOpenLoginPage = false;
 var ActiveTabId = -1;
 var OverlayTemplate = '';
@@ -181,9 +182,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     //if links.length != times.length then
                     //the match has been so long ago that the demo is no longer available
                     for ( let i = 0; i < links.length; i++ ) {
+
+                        // replace dashes with whitespace in "2019-09-06" for FF and IE compatibility
+                        let timeInMs = new Date(times[i].replace(/-/g, ' ')).getTime() / 1000; 
                         uploadData.push({
                             url: links[i],
-                            time: new Date(times[i]).getTime() / 1000
+                            time: timeInMs, 
+                            steamId: request.steamid,
                         });
                     }
 
@@ -204,10 +209,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         };
 
         GetMatches(null, function() {
+            console.log("uploadData");
+            console.log(uploadData);
             if ( uploadData.length <= 0 ) {
                 SendUploadDoneMessage(-1);
                 return;
             }
+            
 
             $.ajax({
                 type: "POST",
