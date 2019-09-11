@@ -1,7 +1,7 @@
 {
   "name": "MENTOR.GG Uploader",
   "short_name": "MENTOR.GG",
-  "version": "1.4",
+  "version": "1.5",
   "description": "Uploads your recent CS:GO matches to MENTOR.GG.",
   "permissions": [
     "tabs",

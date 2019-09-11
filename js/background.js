@@ -209,8 +209,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         };
 
         GetMatches(null, function() {
-            console.log("uploadData");
-            console.log(uploadData);
             if ( uploadData.length <= 0 ) {
                 SendUploadDoneMessage(-1);
                 return;
