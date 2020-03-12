@@ -219,7 +219,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 type: "POST",
                 url: InterfaceTarget,
                 data: JSON.stringify({
-                    list: uploadData
+                    matches: uploadData
                 }),
                 crossDomain: true,
                 contentType: "application/json",
