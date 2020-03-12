@@ -1,5 +1,4 @@
-var InterfaceTarget = 'http://mentor.gg:99/api/demos';
-// var InterfaceTarget = 'http://localhost:6992/api/demos';
+var InterfaceTarget = 'https://api.mentor.gg/v1/extension-upload';
 var UserPressedOpenLoginPage = false;
 var ActiveTabId = -1;
 var OverlayTemplate = '';
