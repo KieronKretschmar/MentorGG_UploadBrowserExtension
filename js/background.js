@@ -184,10 +184,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     for ( let i = 0; i < links.length; i++ ) {
 
                         // replace dashes with whitespace in "2019-09-06" for FF and IE compatibility
-                        let timeInMs = new Date(times[i].replace(/-/g, ' ')).getTime() / 1000; 
+                        let isoMatchDate = new Date(times[i].replace(/-/g, ' ')).toISOString();
                         uploadData.push({
                             url: links[i],
-                            time: timeInMs, 
+                            time: isoMatchDate,
                             steamId: request.steamid,
                         });
                     }
