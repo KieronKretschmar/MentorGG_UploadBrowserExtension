@@ -1,5 +1,4 @@
-var InterfaceTarget = 'http://mentor.gg:99/api/demos';
-// var InterfaceTarget = 'http://localhost:6992/api/demos';
+var InterfaceTarget = 'https://api.mentor.gg/v1/extension-upload';
 var UserPressedOpenLoginPage = false;
 var ActiveTabId = -1;
 var OverlayTemplate = '';
@@ -184,10 +183,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                     for ( let i = 0; i < links.length; i++ ) {
 
                         // replace dashes with whitespace in "2019-09-06" for FF and IE compatibility
-                        let timeInMs = new Date(times[i].replace(/-/g, ' ')).getTime() / 1000; 
+                        let isoMatchDate = new Date(times[i].replace(/-/g, ' ')).toISOString();
                         uploadData.push({
                             url: links[i],
-                            time: timeInMs, 
+                            time: isoMatchDate,
                             steamId: request.steamid,
                         });
                     }
@@ -219,7 +218,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 type: "POST",
                 url: InterfaceTarget,
                 data: JSON.stringify({
-                    list: uploadData
+                    matches: uploadData
                 }),
                 crossDomain: true,
                 contentType: "application/json",
