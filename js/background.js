@@ -1,4 +1,4 @@
-var InterfaceTarget = 'https://api.mentor.gg/v1/extension-upload';
+var InterfaceTarget = 'https://extension-upload.mentor.gg/v1/extension-upload';
 var UserPressedOpenLoginPage = false;
 var ActiveTabId = -1;
 var OverlayTemplate = '';
@@ -214,7 +214,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             }
             
 
-            $.ajax({
+                $.ajax({
                 type: "POST",
                 url: InterfaceTarget,
                 data: JSON.stringify({
