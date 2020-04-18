@@ -1,4 +1,4 @@
-var InterfaceTarget = 'https://extension-upload.mentor.gg/v1/extension-upload';
+var InterfaceTarget = 'https://extension.mentor.gg/v1/extension-upload';
 var UserPressedOpenLoginPage = false;
 var ActiveTabId = -1;
 var OverlayTemplate = '';
