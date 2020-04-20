@@ -222,7 +222,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
                 }),
                 crossDomain: true,
                 contentType: "application/json",
-                dataType: "json",
+                dataType: "text",
                 cache: false,
                 async: true,
                 success: function (msg) {
